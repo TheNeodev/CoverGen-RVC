@@ -16,7 +16,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 mdxnet_models_dir = os.path.join(BASE_DIR, 'mdxnet_models')
 rvc_models_dir = os.path.join(BASE_DIR, 'rvc_models')
 output_dir = os.path.join(BASE_DIR, 'song_output')
-image_path = "/content/PolGen/content/CoverGen.png"
 
 def get_current_models(models_dir):
     models_list = os.listdir(models_dir)
@@ -132,7 +131,6 @@ if __name__ == '__main__':
     with gr.Blocks(title='CoverGen - Politrees (v0.5)') as app:
 
         with gr.Tab("Велком/Контакты"):
-            gr.Image(value=image_path, interactive=False, show_download_button=False, container=False)
             gr.Markdown("<center><h1>Добро пожаловать в CoverGen - Politrees (v0.5)</h1></center>")
             with gr.Row():
                 with gr.Column():
