@@ -18,3 +18,5 @@ tensorboardX
 einops
 local-attention
 mega.py
+wget
+gdown
