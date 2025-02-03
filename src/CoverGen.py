@@ -128,10 +128,10 @@ if __name__ == '__main__':
 
     voice_models = get_current_models(rvc_models_dir)
 
-    with gr.Blocks(title='CoverGen - Politrees (v0.5)') as app:
+    with gr.Blocks(title='CoverGen - Politrees') as app:
 
         with gr.Tab("Велком/Контакты"):
-            gr.Markdown("<center><h1>Добро пожаловать в CoverGen - Politrees (v0.5)</h1></center>")
+            gr.Markdown("<center><h1>Добро пожаловать в CoverGen - Politrees</h1></center>")
             with gr.Row():
                 with gr.Column():
                     gr.HTML("<center><h2><a href='https://www.youtube.com/channel/UCHb3fZEVxUisnqLqCrEM8ZA'>YouTube: Politrees</a></h2></center>")
@@ -140,7 +140,7 @@ if __name__ == '__main__':
                     gr.HTML("<center><h2><a href='https://t.me/pol1trees'>Telegram Канал</a></h2></center>")
                     gr.HTML("<center><h2><a href='https://t.me/+GMTP7hZqY0E4OGRi'>Telegram Чат</a></h2></center>")
 
-            gr.HTML("<center><h2><a href='https://github.com/Bebra777228/Pol-Litres-RVC'>GitHub проекта</a></h2></center>")
+            gr.HTML("<center><h2><a href='https://github.com/Bebra777228/PolGen-RVC'>GitHub проекта</a></h2></center>")
 
         with gr.Tab("CoverGen"):
             with gr.Row():
