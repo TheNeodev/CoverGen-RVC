@@ -11,7 +11,7 @@ pydub==0.25.1
 pyworld==0.3.4
 --find-links https://download.pytorch.org/whl/torch_stable.html
 torchcrepe==0.0.20
-yt_dlp==2023.7.6
+yt_dlp
 sox==1.4.1
 gradio==4.43.0
 tensorboardX
