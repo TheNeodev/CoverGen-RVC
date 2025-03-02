@@ -169,7 +169,7 @@ def downoad_tabs():
             url_mod = gr.Text(label="Url Model")
             mod_name = gr.Text(label="model name")
         download = gr.Button("Download")
-        download.click(download_online_model, inputs=[url_mod, mod_name] outputs=None)
+        download.click(download_online_model, inputs=[url_mod, mod_name], outputs=None)
 
 
 def build_interface():
