@@ -21,3 +21,4 @@ numpy==1.23.5
 einops
 local-attention
 tensorboardX
+IPython
