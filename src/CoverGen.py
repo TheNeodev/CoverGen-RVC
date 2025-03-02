@@ -11,7 +11,7 @@ import gradio as gr
 
 from main import song_cover_pipeline
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(file)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 mdxnet_models_dir = os.path.join(BASE_DIR, 'mdxnet_models')
 rvc_models_dir = os.path.join(BASE_DIR, 'rvc_models')
