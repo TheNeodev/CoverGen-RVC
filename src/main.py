@@ -345,7 +345,7 @@ if __name__ == '__main__':
 
     rvc_dirname = args.rvc_dirname
     if not os.path.exists(os.path.join(rvc_models_dir, rvc_dirname)):
-        raise Exception(f'Папка {os.path.join(rvc_models_dir, rvc_dirname)} не найдена.')
+        raise Exception(f'Model {os.path.join(rvc_models_dir, rvc_dirname)} Not Found.')
 
     cover_path = song_cover_pipeline(args.song_input, rvc_dirname, args.pitch_change, args.keep_files,
                                      main_gain=args.main_vol, backup_gain=args.backup_vol, inst_gain=args.inst_vol,
