@@ -14,8 +14,6 @@ from main import song_cover_pipeline
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 mdxnet_models_dir = os.path.join(BASE_DIR, 'mdxnet_models')
-extraction_folder = os.path.join(BASE_DIR, 'rvc_models')
-
 rvc_models_dir = os.path.join(BASE_DIR, 'rvc_models')
 
 output_dir = os.path.join(BASE_DIR, 'song_output')
@@ -35,24 +33,27 @@ def extract_zip(extraction_folder, zip_name):
         zip_ref.extractall(extraction_folder)
     os.remove(zip_name)
 
-index_filepath, model_filepath = None, None
-for root, dirs, files in os.walk(extraction_folder):
-    for name in files:
-        if name.endswith('.index') and os.stat(os.path.join(root, name)).st_size > 1024 * 100:
-            index_filepath = os.path.join(root, name)
-        if name.endswith('.pth') and os.stat(os.path.join(root, name)).st_size > 1024 * 1024 * 40:
-            model_filepath = os.path.join(root, name)
+    index_filepath, model_filepath = None, None
+    for root, dirs, files in os.walk(extraction_folder):
+        for name in files:
+            if name.endswith('.index') and os.stat(os.path.join(root, name)).st_size > 1024 * 100:
+                index_filepath = os.path.join(root, name)
 
-if not model_filepath:
-    raise gr.Error(f'The .pth model file was not found in the extracted zip file. Please check {extraction_folder}.')
+            if name.endswith('.pth') and os.stat(os.path.join(root, name)).st_size > 1024 * 1024 * 40:
+                model_filepath = os.path.join(root, name)
 
-os.rename(model_filepath, os.path.join(extraction_folder, os.path.basename(model_filepath)))
-if index_filepath:
-    os.rename(index_filepath, os.path.join(extraction_folder, os.path.basename(index_filepath)))
+    if not model_filepath:
+        raise gr.Error(f'No .pth model file was found in the extracted zip. Please check {extraction_folder}.')
 
-for filepath in os.listdir(extraction_folder):
-    if os.path.isdir(os.path.join(extraction_folder, filepath)):
-        shutil.rmtree(os.path.join(extraction_folder, filepath))
+    # move model and index file to extraction folder
+    os.rename(model_filepath, os.path.join(extraction_folder, os.path.basename(model_filepath)))
+    if index_filepath:
+        os.rename(index_filepath, os.path.join(extraction_folder, os.path.basename(index_filepath)))
+
+    # remove any unnecessary nested folders
+    for filepath in os.listdir(extraction_folder):
+        if os.path.isdir(os.path.join(extraction_folder, filepath)):
+            shutil.rmtree(os.path.join(extraction_folder, filepath))
 
 def download_online_model(url, dir_name, progress=gr.Progress()):
     try:
