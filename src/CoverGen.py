@@ -163,6 +163,15 @@ def reset_defaults():
         None, None, None, None, None  # audio outputs
     ]
 
+def downoad_tabs():
+    with gr.TabItem("Download Models"):
+        with gr.Row():
+            url_mod = gr.Text(label="Url Model")
+            mod_name = gr.Text(label="model name")
+        download = gr.Button("Download")
+        download.click(download_online_model inputs=[url_mod, mod_name] outputs=None)
+
+
 def build_interface():
     # Using a built-in theme to improve appearance
     with gr.Blocks(title="CoverGen-RVC", theme=gr.themes.Soft(primary_hue=gr.themes.colors.red, secondary_hue=gr.themes.colors.pink)) as app:
@@ -177,8 +186,8 @@ def build_interface():
                         rvc_model = gr.Dropdown(voice_models, label='Voice Models',
                                                 info='Directory "CoverGen/rvc_models". Click "Update Models List" after adding new models.')
                         ref_btn = gr.Button('Update Models List 🔁', variant='primary')
-                        
-                        # Input options in a nested row
+                        with gr.Row():
+                            downoad_tabs()
                         with gr.Row():
                             with gr.Column() as yt_link_col:
                                 song_input = gr.Text(label='Input Song', info='Enter a YouTube link or a file path')
@@ -196,7 +205,7 @@ def build_interface():
                         with gr.Row():
                             pitch = gr.Slider(-24, 24, value=0, step=1, label='Voice Pitch Shift',
                                               info='Negative for a more masculine tone; positive for a feminine tone')
-                            f0autotune = gr.Checkbox(label="Auto-tuning", info='Automatically adjust pitch for a harmonious vocal', value=False)
+                        f0autotune = gr.Checkbox(label="Auto-tuning", info='Automatically adjust pitch for a harmonious vocal', value=False)
                     
                     # Group transformation settings in an accordion
                     with gr.Accordion('Voice Transformation Settings', open=False):
