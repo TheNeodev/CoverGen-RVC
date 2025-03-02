@@ -164,7 +164,7 @@ def reset_defaults():
 
 def build_interface():
     # Using a built-in theme to improve appearance
-    with gr.Blocks(title="CoverGen-RVC", theme=gr.themes.Soft()) as app:
+    with gr.Blocks(title="CoverGen-RVC", theme=gr.themes.Soft(primary_hue=gr.themes.colors.red, secondary_hue=gr.themes.colors.pink)) as app:
         voice_models = get_current_models(rvc_models_dir)
         is_webui = gr.Number(value=1, visible=False)
         
