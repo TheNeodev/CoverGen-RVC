@@ -111,9 +111,10 @@ def show_hop_slider(pitch_detection_algo):
 
 def show_pitch_slider(pitch_detection_algo):
     if pitch_detection_algo in ['rmvpe+']:
-        return gr.update(visible=True)
+        return gr.update(visible=True), gr.update(visible=True)
     else:
-        return gr.update(visible=False)
+        return gr.update(visible=False), gr.update(visible=False)
+        
 
 def update_f0_method(use_hybrid_methods):
     if use_hybrid_methods:
