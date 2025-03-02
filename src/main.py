@@ -93,7 +93,7 @@ def get_rvc_model(voice_model, is_webui):
             rvc_index_filename = file
 
     if rvc_model_filename is None:
-        error_msg = f'В каталоге {model_dir} отсутствует файл модели.'
+        error_msg = f'There is no model file in the {model_dir} directory.'
         raise_exception(error_msg, is_webui)
 
     return os.path.join(model_dir, rvc_model_filename), os.path.join(model_dir, rvc_index_filename) if rvc_index_filename else ''
@@ -161,7 +161,7 @@ def display_progress(message, percent, is_webui, progress=None):
 def preprocess_song(song_input, mdx_model_params, song_id, is_webui, input_type, progress=None):
     keep_orig = False
     if input_type == 'yt':
-        display_progress('[~] Загрузка песни...', 0, is_webui, progress)
+        display_progress('[~] Downloading a song...', 0, is_webui, progress)
         song_link = song_input.split('&')[0]
         orig_song_path = yt_download(song_link)
     elif input_type == 'local':
@@ -173,13 +173,13 @@ def preprocess_song(song_input, mdx_model_params, song_id, is_webui, input_type,
     song_output_dir = os.path.join(output_dir, song_id)
     orig_song_path = convert_to_stereo(orig_song_path)
 
-    display_progress('[~] Отделение вокала от инструментала...', 0.1, is_webui, progress)
+    display_progress('[~] Separating vocals from instrumentals...', 0.1, is_webui, progress)
     vocals_path, instrumentals_path = run_mdx(mdx_model_params, song_output_dir, os.path.join(mdxnet_models_dir, 'Kim_Vocal_2.onnx'), orig_song_path, denoise=True, keep_orig=keep_orig)
 
-    display_progress('[~] Разделение основного вокала и бэк-вокала...', 0.2, is_webui, progress)
+    display_progress('[~] Separating lead and backing vocals...', 0.2, is_webui, progress)
     backup_vocals_path, main_vocals_path = run_mdx(mdx_model_params, song_output_dir, os.path.join(mdxnet_models_dir, 'UVR_MDXNET_KARA_2.onnx'), vocals_path, suffix='Backup', invert_suffix='Main', denoise=True)
 
-    display_progress('[~] Применение DeReverb к вокалу...', 0.3, is_webui, progress)
+    display_progress('[~] Applying DeReverb to Vocals...', 0.3, is_webui, progress)
     _, main_vocals_dereverb_path = run_mdx(mdx_model_params, song_output_dir, os.path.join(mdxnet_models_dir, 'Reverb_HQ_By_FoxJoy.onnx'), main_vocals_path, invert_suffix='DeReverb', exclude_main=True, denoise=True)
 
     return orig_song_path, vocals_path, instrumentals_path, main_vocals_path, backup_vocals_path, main_vocals_dereverb_path
@@ -245,9 +245,9 @@ def song_cover_pipeline(song_input, voice_model, pitch_change, keep_files, is_we
 
     try:
         if not song_input or not voice_model:
-            raise_exception('Убедитесь, что поле ввода песни и поле модели голоса заполнены.', is_webui)
+            raise_exception('Make sure the song input field and voice model field are filled in.', is_webui)
 
-        display_progress('[~] Запуск конвейера генерации AI-кавера...', 0, is_webui, progress)
+        display_progress('[~] Launch of the AI ​​cover generation pipeline...', 0, is_webui, progress)
 
         with open(os.path.join(mdxnet_models_dir, 'model_data.json')) as infile:
             mdx_model_params = json.load(infile)
@@ -256,7 +256,7 @@ def song_cover_pipeline(song_input, voice_model, pitch_change, keep_files, is_we
             input_type = 'yt'
             song_id = get_youtube_video_id(song_input)
             if song_id is None:
-                error_msg = 'Неверный URL-адрес YouTube.'
+                error_msg = 'invalid YouTube Url.'
                 raise_exception(error_msg, is_webui)
         else:
             input_type = 'local'
@@ -264,7 +264,7 @@ def song_cover_pipeline(song_input, voice_model, pitch_change, keep_files, is_we
             if os.path.exists(song_input):
                 song_id = get_hash(song_input)
             else:
-                error_msg = f'{song_input} не существует.'
+                error_msg = f'{song_input} doesn't exist.'
                 song_id = None
                 raise_exception(error_msg, is_webui)
 
@@ -291,22 +291,22 @@ def song_cover_pipeline(song_input, voice_model, pitch_change, keep_files, is_we
             os.remove(ai_cover_path)
 
         if not os.path.exists(ai_vocals_path):
-            display_progress('[~] Преобразование вокала...', 0.5, is_webui, progress)
+            display_progress('[~] Vocal conversion...', 0.5, is_webui, progress)
             voice_change(voice_model, main_vocals_dereverb_path, ai_vocals_path, pitch_change, f0_method, index_rate, 
                          filter_radius, rms_mix_rate, protect, crepe_hop_length, f0autotune, f0_min, f0_max, is_webui)
 
-        display_progress('[~] Применение аудиоэффектов к вокалу...', 0.8, is_webui, progress)
+        display_progress('[~] Applying audio effects to vocals...', 0.8, is_webui, progress)
         ai_vocals_mixed_path = add_audio_effects(ai_vocals_path, reverb_rm_size, reverb_wet, reverb_dry, reverb_damping, reverb_width, low_shelf_gain, high_shelf_gain, limiter_threshold, 
                                                  compressor_ratio, compressor_threshold, delay_time, delay_feedback, noise_gate_threshold, noise_gate_ratio, noise_gate_attack, 
                                                  noise_gate_release, drive_db, chorus_rate_hz, chorus_depth, chorus_centre_delay_ms, chorus_feedback, chorus_mix, clipping_threshold)
 
-        display_progress('[~] Объединение AI-вокала и инструментальной части...', 0.9, is_webui, progress)
+        display_progress('[~] Combining AI vocals and instrumental parts...', 0.9, is_webui, progress)
         combine_audio([ai_vocals_mixed_path, backup_vocals_path, instrumentals_path], ai_cover_path, main_gain, backup_gain, inst_gain, output_format)
 
         intermediate_files = [vocals_path, main_vocals_path, ai_vocals_mixed_path]
 
         if not keep_files:
-            display_progress('[~] Удаление промежуточных аудиофайлов...', 0.95, is_webui, progress)
+            display_progress('[~] Removing intermediate audio files...', 0.95, is_webui, progress)
             for file in intermediate_files:
                 if file and os.path.exists(file):
                     os.remove(file)
