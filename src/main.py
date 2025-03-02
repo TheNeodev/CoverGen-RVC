@@ -264,7 +264,7 @@ def song_cover_pipeline(song_input, voice_model, pitch_change, keep_files, is_we
             if os.path.exists(song_input):
                 song_id = get_hash(song_input)
             else:
-                error_msg = f'{song_input} doesn't exist.'
+                error_msg = f"{song_input} doesn't exist."
                 song_id = None
                 raise_exception(error_msg, is_webui)
 
@@ -357,4 +357,4 @@ if __name__ == '__main__':
                                      reverb_dry=args.reverb_dryness, reverb_damping=args.reverb_damping,
                                      output_format=args.output_format, f0autotune=args.autotune,
                                      f0_min=args.minimum_pitch, f0_max=args.maximum_pitch)
-    print(f'[+] Кавер создан по пути {cover_path}')
+    print(f'[+] Cover created at: {cover_path}')
