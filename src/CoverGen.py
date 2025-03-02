@@ -266,8 +266,7 @@ if __name__ == '__main__':
                                           chorus_mix, clipping_threshold, f0autotune, f0_min, f0_max,
                                           ai_cover, ai_vocals, main_vocals_dereverb, backup_vocals, instrumentals])
 
-    # Andik, go fuck yourself =)
-
+    
     with gr.Tab('Model Upload'):
             with gr.Tab('Upload via Link'):
                 with gr.Row():
@@ -276,7 +275,7 @@ if __name__ == '__main__':
 
                 with gr.Row():
                     dl_output_message = gr.Text(label='Output Message', interactive=False, scale=3)
-                    download_btn = gr.Button('Download Model', variant='primary', scale=1.5)
+                download_btn = gr.Button('Download Model', variant='primary', scale=1.5)
 
                 download_btn.click(download_online_model, inputs=[model_zip_link, model_name], outputs=dl_output_message)
 
