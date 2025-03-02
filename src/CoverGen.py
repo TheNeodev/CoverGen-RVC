@@ -77,6 +77,7 @@ def download_online_model(url, dir_name, progress=gr.Progress()):
 
         progress(0.5, desc='[~] Extracting model zip...')
         extract_zip(extraction_folder, zip_name)
+        print(f'[+] Model {dir_name} has been successfully downloaded!')
         return f'[+] Model {dir_name} has been successfully downloaded!'
     except Exception as e:
         raise gr.Error(str(e))
