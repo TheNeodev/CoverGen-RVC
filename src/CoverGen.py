@@ -267,36 +267,8 @@ if __name__ == '__main__':
                                           ai_cover, ai_vocals, main_vocals_dereverb, backup_vocals, instrumentals])
 
     
-    with gr.Tab('Model Upload'):
-            with gr.Tab('Upload via Link'):
-                with gr.Row():
-                    model_zip_link = gr.Text(label='Model download link', info='This should be a link to a zip file containing the .pth model file and an optional .index file.', scale=3)
-                    model_name = gr.Text(label='Model Name', info='Give your model a unique name, distinct from other voice models.', scale=1.5)
 
-                with gr.Row():
-                    dl_output_message = gr.Text(label='Output Message', interactive=False, scale=3)
-                download_btn = gr.Button('Download Model', variant='primary', scale=1.5)
-
-                download_btn.click(download_online_model, inputs=[model_zip_link, model_name], outputs=dl_output_message)
-
-            with gr.Tab('Upload Locally'):
-                gr.Markdown('## Upload a locally trained RVC v2 model and index file')
-                gr.Markdown('- Locate the model file (in the weights folder) and the optional index file (in the logs/[name] folder)')
-                gr.Markdown('- Compress the files into a zip file')
-                gr.Markdown('- Upload the zip file and give the voice a unique name')
-                gr.Markdown('- Click the "Upload Model" button')
-
-                with gr.Row():
-                    with gr.Column(scale=2):
-                        zip_file = gr.File(label='Zip File')
-                    with gr.Column(scale=1.5):
-                        local_model_name = gr.Text(label='Model Name', info='Give your model a unique name, distinct from other voice models.')
-                        model_upload_button = gr.Button('Upload Model', variant='primary')
-
-                with gr.Row():
-                    local_upload_output_message = gr.Text(label='Output Message', interactive=False)
-                    model_upload_button.click(upload_local_model, inputs=[zip_file, local_model_name], outputs=local_upload_output_message)
-
+    
     app.launch(
         share=True,
         server_name=None if not args.listen else (args.listen_host or '0.0.0.0'),
