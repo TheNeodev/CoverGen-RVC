@@ -262,7 +262,7 @@ if __name__ == '__main__':
                                           chorus_mix, clipping_threshold, f0autotune, f0_min, f0_max,
                                           ai_cover, ai_vocals, main_vocals_dereverb, backup_vocals, instrumentals])
 
-    Andik, go fuck yourself =)
+    # Andik, go fuck yourself =)
 
     with gr.Tab('Model Upload'):
             with gr.Tab('Upload via Link'):
