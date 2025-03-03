@@ -24,7 +24,7 @@ def get_current_models(models_dir: str) -> list:
     return [item for item in os.listdir(models_dir) if item not in items_to_remove]
 
 
-def update_models_list() -> gr.Update:
+def update_models_list() -> gr.update:
     """Update the dropdown choices for available voice models."""
     models_list = get_current_models(RVC_MODELS_DIR)
     return gr.update(choices=models_list)
