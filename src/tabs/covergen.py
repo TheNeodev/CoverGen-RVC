@@ -325,5 +325,3 @@ def covergen_tab():
                 backup_vocals, instrumentals
             ]
         )
-
-\
