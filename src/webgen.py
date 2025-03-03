@@ -150,6 +150,16 @@ def create_covergen_tab():
         # Use sub-tabs to separate related settings
         with gr.Tabs():
             with gr.TabItem("Input & Voice"):
+                gr.Markdown("### Voice Settings")
+                with gr.Row():
+                    voice_model_dropdown = gr.Dropdown(
+                        voice_models, label='Voice Models',
+                        info='Models are located in "CoverGen/rvc_models". Click "Update Models List" after adding new models.'
+                    )
+                    update_btn = gr.Button('Update Models List 🔁', variant='primary')
+                    update_btn.click(update_models_list, None, outputs=voice_model_dropdown)
+                
+                
                 gr.Markdown("### Input Source")
                 song_input = gr.Text(
                     label='YouTube Link or Local File Path',
@@ -170,23 +180,17 @@ def create_covergen_tab():
                     inputs=[upload_button],
                     outputs=[local_file, song_input]
                 )
-                gr.Markdown("### Voice Settings")
-                voice_model_dropdown = gr.Dropdown(
-                    voice_models, label='Voice Models',
-                    info='Models are located in "CoverGen/rvc_models". Click "Update Models List" after adding new models.'
-                )
-                update_btn = gr.Button('Update Models List 🔁', variant='primary')
-                update_btn.click(update_models_list, None, outputs=voice_model_dropdown)
-                pitch = gr.Slider(
-                    -24, 24, value=0, step=1, label='Voice Pitch Shift',
-                    info='Shift pitch: negative for a deeper tone, positive for a brighter tone'
-                )
-                f0autotune = gr.Checkbox(
-                    label="Auto-tuning",
-                    info='Automatically adjust pitch for more harmonious vocals',
-                    value=False
-                )
-            with gr.TabItem("Transform & Effects"):
+                with gr.Row():
+                    pitch = gr.Slider(
+                        -12, 12, value=0, step=1, label='Voice Pitch Shift',
+                        info='Shift pitch: negative for a deeper tone, positive for a brighter tone'
+                    )
+                    f0autotune = gr.Checkbox(
+                        label="Auto-tuning",
+                        info='Automatically adjust pitch for more harmonious vocals',
+                        value=False
+                    )
+            with gr.TabItem("Transform & Effects Settings"):
                 with gr.Accordion('Voice Transformation Settings', open=True):
                     gr.Markdown("#### Basic Settings")
                     with gr.Row():
@@ -402,10 +406,9 @@ def build_interface():
     """
     with gr.Blocks(
         title="CoverGen-RVC", 
-        theme=gr.themes.Soft(primary_hue=gr.themes.colors.red, secondary_hue=gr.themes.colors.pink),
         css=custom_css
     ) as app:
-        gr.Label("CoveR Gen RVC")
+        gr.Label("CoverGen RVC")
         with gr.Tabs():
             create_covergen_tab()
             create_download_models_tab()
