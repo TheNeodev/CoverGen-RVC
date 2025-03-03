@@ -1,23 +1,37 @@
-requests
+
+pip>=23.3; sys_platform == 'darwin'
+wheel; sys_platform == 'darwin'
+PyYAML; sys_platform == 'darwin'
+numpy==1.23.5
+requests>=2.31.0,<2.32.0
+tqdm
+wget
 mega.py
 gdown
-wget
-gradio==4.43.0
+
+ffmpeg-python>=0.2.0
+faiss-cpu==1.7.3
 librosa==0.9.2
+scipy==1.11.1
+soundfile==0.12.1
+noisereduce
+pedalboard
+stftpitchshift
+soxr
+
+gradio==4.43.0
 sox
 yt_dlp
 pedalboard
 onnxruntime-gpu>=1.17
-torch<2.6
-torchaudio<2.6
-torchvision<0.21
+torch==2.3.1
+torchaudio==2.3.1
+torchvision==0.18.1
 fairseq==0.12.2
-ffmpeg-python>=0.2.0
+
 praat-parselmouth>=0.4.2
 torchcrepe==0.0.23
 pyworld==0.3.4
-faiss-cpu==1.7.3
-numpy==1.23.5
 einops
 local-attention
 tensorboardX
