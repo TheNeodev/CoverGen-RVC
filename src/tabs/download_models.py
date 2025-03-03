@@ -9,7 +9,7 @@ from argparse import ArgumentParser
 import gradio as gr
 
 # Define directories
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.getcwd()
 RVC_MODELS_DIR = os.path.join(BASE_DIR, 'rvc_models')
 OUTPUT_DIR = os.path.join(BASE_DIR, 'song_output')
 
