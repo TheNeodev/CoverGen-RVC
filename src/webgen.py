@@ -379,7 +379,7 @@ if __name__ == '__main__':
     parser.add_argument("-s", "--share", action="store_true", dest="share_enabled", default=False, help="Allow sharing")
     parser.add_argument("-l", "--listen", action="store_true", default=False, help="Make the WebUI accessible on your local network.")
     parser.add_argument("-lh", '--listen-host', type=str, help='Hostname for the server.')
-    parser.add_argument("-lp"  '--listen-port', type=int, help='Port for the server.')
+    parser.add_argument("-lp",  '--listen-port', type=int, help='Port for the server.')
     args = parser.parse_args()
 
     app = build_interface()
