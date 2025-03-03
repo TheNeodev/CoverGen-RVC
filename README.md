@@ -35,7 +35,7 @@ pip install -r requirements.txt
 
 4. Run the WebUI: Launch the WebUI to start generating AI covers.
 ```
-python app.py -h
+python src/webgen.py -h
 ```
 
 5. Access the WebUI: Open your web browser and navigate to http://localhost:5000 to access the CoverGen-RVC interface.
