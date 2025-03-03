@@ -14,29 +14,22 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RVC_MODELS_DIR = os.path.join(BASE_DIR, 'rvc_models')
 OUTPUT_DIR = os.path.join(BASE_DIR, 'song_output')
 
-
 # ----------------------------
 # Helper Functions for Models
 # ----------------------------
 def get_current_models(models_dir: str) -> list:
-    """Return a list of available models in the given directory, excluding unwanted files."""
     items_to_remove = ['hubert_base.pt', 'MODELS.txt', 'rmvpe.pt', 'fcpe.pt']
     return [item for item in os.listdir(models_dir) if item not in items_to_remove]
 
-
 def update_models_list() -> gr.update:
-    """Update the dropdown choices for available voice models."""
     models_list = get_current_models(RVC_MODELS_DIR)
     return gr.update(choices=models_list)
 
-
 def extract_zip(extraction_folder: str, zip_name: str):
-    """Extract a zip file, locate key model files, and cleanup nested folders."""
     os.makedirs(extraction_folder, exist_ok=True)
     with zipfile.ZipFile(zip_name, 'r') as zip_ref:
         zip_ref.extractall(extraction_folder)
     os.remove(zip_name)
-
     index_filepath, model_filepath = None, None
     for root, _, files in os.walk(extraction_folder):
         for name in files:
@@ -45,31 +38,23 @@ def extract_zip(extraction_folder: str, zip_name: str):
                 index_filepath = full_path
             if name.endswith('.pth') and os.stat(full_path).st_size > 1024 * 1024 * 40:
                 model_filepath = full_path
-
     if not model_filepath:
         raise gr.Error(f'No .pth model file found in {extraction_folder}. Please check the zip contents.')
-
-    # Move model and index files to the extraction folder root
     os.rename(model_filepath, os.path.join(extraction_folder, os.path.basename(model_filepath)))
     if index_filepath:
         os.rename(index_filepath, os.path.join(extraction_folder, os.path.basename(index_filepath)))
-
-    # Remove any nested directories no longer needed
     for item in os.listdir(extraction_folder):
         item_path = os.path.join(extraction_folder, item)
         if os.path.isdir(item_path):
             shutil.rmtree(item_path)
 
-
 def download_online_model(url: str, dir_name: str, progress=gr.Progress()):
-    """Download and extract a model from an online source."""
     try:
         progress(0, desc=f'[~] Downloading voice model: {dir_name}...')
         zip_name = url.split('/')[-1]
         extraction_folder = os.path.join(RVC_MODELS_DIR, dir_name)
         if os.path.exists(extraction_folder):
             raise gr.Error(f'Model directory {dir_name} already exists! Please choose a different name.')
-
         if 'huggingface.co' in url:
             urllib.request.urlretrieve(url, zip_name)
         elif 'pixeldrain.com' in url:
@@ -81,7 +66,6 @@ def download_online_model(url: str, dir_name: str, progress=gr.Progress()):
             file_id = url.split('/')[-2]
             output = os.path.join('.', zip_name)
             gdown.download(id=file_id, output=output, quiet=False)
-
         progress(0.5, desc='[~] Extracting model zip...')
         extract_zip(extraction_folder, zip_name)
         print(f'[+] Model {dir_name} successfully downloaded!')
@@ -89,9 +73,7 @@ def download_online_model(url: str, dir_name: str, progress=gr.Progress()):
     except Exception as e:
         raise gr.Error(str(e))
 
-
 def upload_local_model(zip_path, dir_name: str, progress=gr.Progress()):
-    """Extract an uploaded model zip file."""
     try:
         extraction_folder = os.path.join(RVC_MODELS_DIR, dir_name)
         if os.path.exists(extraction_folder):
@@ -103,22 +85,16 @@ def upload_local_model(zip_path, dir_name: str, progress=gr.Progress()):
     except Exception as e:
         raise gr.Error(str(e))
 
-
 # ----------------------------
 # Helper Functions for UI
 # ----------------------------
 def swap_visibility():
-    """Toggle visibility between YouTube link input and file upload."""
     return gr.update(visible=True), gr.update(visible=False), gr.update(value=''), gr.update(value=None)
 
-
 def process_file_upload(file):
-    """Process file upload and update the text input with the file name."""
     return file.name, gr.update(value=file.name)
 
-
 def show_hop_slider(pitch_detection_algo: str):
-    """Show or hide the hop slider based on the pitch detection algorithm."""
     if pitch_detection_algo in [
         'rmvpe+', 'mangio-crepe', 'hybrid[rmvpe+mangio-crepe]',
         'hybrid[mangio-crepe+rmvpe]', 'hybrid[mangio-crepe+fcpe]',
@@ -128,17 +104,13 @@ def show_hop_slider(pitch_detection_algo: str):
     else:
         return gr.update(visible=False)
 
-
 def show_pitch_slider(pitch_detection_algo: str):
-    """Show or hide the pitch sliders depending on the algorithm."""
     if pitch_detection_algo == 'rmvpe+':
         return gr.update(visible=True), gr.update(visible=True)
     else:
         return gr.update(visible=False), gr.update(visible=False)
 
-
 def update_f0_method(use_hybrid_methods: bool):
-    """Update the available pitch extraction methods based on hybrid method selection."""
     if use_hybrid_methods:
         return gr.update(choices=[
             'hybrid[rmvpe+fcpe]', 'hybrid[rmvpe+mangio-crepe]',
@@ -148,53 +120,16 @@ def update_f0_method(use_hybrid_methods: bool):
     else:
         return gr.update(choices=['rmvpe+', 'fcpe', 'rmvpe', 'mangio-crepe'], value='rmvpe+')
 
-
 def reset_defaults():
-    """Return default values for all parameters."""
     return [
-        0,    # pitch
-        0.5,  # index_rate
-        3,    # filter_radius
-        0.25, # rms_mix_rate
-        0.33, # protect
-        128,  # crepe_hop_length
-        0,    # main_gain
-        0,    # backup_gain
-        0,    # inst_gain
-        0.25, # reverb_rm_size
-        0.75, # reverb_width
-        0.05, # reverb_wet
-        0.85, # reverb_dry
-        0.5,  # reverb_damping
-        0,    # delay_time
-        0,    # delay_feedback
-        4,    # compressor_ratio
-        -16,  # compressor_threshold
-        -1,   # low_shelf_gain
-        3,    # high_shelf_gain
-        -30,  # noise_gate_threshold
-        6,    # noise_gate_ratio
-        10,   # noise_gate_attack
-        100,  # noise_gate_release
-        0,    # drive_db
-        0,    # chorus_rate_hz
-        0,    # chorus_depth
-        0,    # chorus_centre_delay_ms
-        0,    # chorus_feedback
-        0,    # chorus_mix
-        0,    # clipping_threshold
-        0,    # f0autotune (False interpreted as 0)
-        50,   # f0_min
-        1100, # f0_max
-        None, None, None, None, None  # audio outputs
+        0, 0.5, 3, 0.25, 0.33, 128, 0, 0, 0, 0.25, 0.75, 0.05, 0.85, 0.5, 0, 0,
+        4, -16, -1, 3, -30, 6, 10, 100, 0, 0, 0, 0, 0, 50, 1100, None, None, None, None, None
     ]
-
 
 # ----------------------------
 # UI Component Builders
 # ----------------------------
 def create_download_models_tab():
-    """Create the 'Download Models' tab UI."""
     with gr.TabItem("Download Models"):
         with gr.Row():
             url_mod = gr.Text(label="Model URL", placeholder="Enter model URL...")
@@ -202,35 +137,27 @@ def create_download_models_tab():
         download_btn = gr.Button("Download Model", variant='primary')
         download_btn.click(download_online_model, inputs=[url_mod, mod_name], outputs=None)
 
-
-
-
- 
 def create_covergen_tab():
-    """Create the 'CoverGen' tab UI with improved layout and usability."""
+    """Create the 'CoverGen' tab UI with an improved, responsive layout for desktop and mobile."""
     voice_models = get_current_models(RVC_MODELS_DIR)
     with gr.TabItem("CoverGen"):
-        # Header and basic instructions
         gr.Markdown(
             """
             # AI Cover Generator
-            Use this tool to transform a song into an AI-generated cover.
-            Select a voice model, provide an audio input (YouTube URL or file upload), adjust voice transformation and mixing settings, then click **Generate**.
+            Transform a song into an AI-generated cover. Use the tabs below to switch between Input/Voice settings and Transformation/Effects.
             """
         )
-        with gr.Row():
-            # Left column: Input settings
-            with gr.Column(scale=1):
+        # Use sub-tabs to separate related settings
+        with gr.Tabs():
+            with gr.TabItem("Input & Voice"):
                 gr.Markdown("### Input Source")
-                with gr.Row():
-                    song_input = gr.Text(
-                        label='YouTube Link or Local File Path',
-                        placeholder='Enter a YouTube URL or file path...'
-                    )
-                    upload_button = gr.UploadButton(
-                        'Upload Audio', file_types=['audio'], variant='primary'
-                    )
-                # Toggle row for file upload details
+                song_input = gr.Text(
+                    label='YouTube Link or Local File Path',
+                    placeholder='Enter a YouTube URL or file path...'
+                )
+                upload_button = gr.UploadButton(
+                    'Upload Audio', file_types=['audio'], variant='primary'
+                )
                 with gr.Row(visible=False) as file_upload_row:
                     local_file = gr.File(label='Uploaded Audio File')
                     switch_input_btn = gr.Button('Switch to Text Input')
@@ -238,7 +165,6 @@ def create_covergen_tab():
                         swap_visibility,
                         outputs=[song_input, file_upload_row, song_input, local_file]
                     )
-                # Process file upload to update text input with file name
                 upload_button.upload(
                     process_file_upload,
                     inputs=[upload_button],
@@ -260,10 +186,7 @@ def create_covergen_tab():
                     info='Automatically adjust pitch for more harmonious vocals',
                     value=False
                 )
-
-            # Right column: Transformation and mixing controls in expandable sections
-            with gr.Column(scale=2):
-                # Voice Transformation Settings
+            with gr.TabItem("Transform & Effects"):
                 with gr.Accordion('Voice Transformation Settings', open=True):
                     gr.Markdown("#### Basic Settings")
                     with gr.Row():
@@ -301,7 +224,6 @@ def create_covergen_tab():
                             8, 512, value=128, step=8, label='Hop Length',
                             info='Smaller values improve pitch accuracy at the cost of speed'
                         )
-                        # Dynamically show/hide hop slider
                         f0_method.change(
                             show_hop_slider, inputs=f0_method, outputs=crepe_hop_length
                         )
@@ -322,7 +244,6 @@ def create_covergen_tab():
                         info='Keep temporary audio files for debugging',
                         visible=False
                     )
-                # Audio Mixing & Effects Settings
                 with gr.Accordion('Audio Mixing & Effects', open=False):
                     gr.Markdown("#### Volume Adjustment (dB)")
                     with gr.Row():
@@ -425,7 +346,6 @@ def create_covergen_tab():
                             clipping_threshold = gr.Slider(
                                 -20, 0, value=0, label='Clipping Threshold'
                             )
-        # Output and Control Section at the bottom
         with gr.Row():
             with gr.Column(scale=2):
                 generate_btn = gr.Button("Generate", variant='primary')
@@ -441,8 +361,6 @@ def create_covergen_tab():
                     ['mp3', 'flac', 'wav'], value='mp3', label='Output File Type'
                 )
                 clear_btn = gr.Button("Reset All Parameters", min_width=100)
-        
-        # Bind the generate and reset actions
         generate_btn.click(
             song_cover_pipeline,
             inputs=[
@@ -473,12 +391,19 @@ def create_covergen_tab():
             ]
         )
 
-
 def build_interface():
-    """Build and return the Gradio Blocks interface."""
+    # Custom CSS to ensure rows stack on narrow screens (mobile responsiveness)
+    custom_css = """
+    @media (max-width: 768px) {
+        .gradio-container .row { 
+            flex-direction: column !important; 
+        }
+    }
+    """
     with gr.Blocks(
         title="CoverGen-RVC", 
-        theme=gr.themes.Soft(primary_hue=gr.themes.colors.red, secondary_hue=gr.themes.colors.pink)
+        theme=gr.themes.Soft(primary_hue=gr.themes.colors.red, secondary_hue=gr.themes.colors.pink),
+        css=custom_css
     ) as app:
         gr.Label("CoveR Gen RVC")
         with gr.Tabs():
@@ -486,10 +411,6 @@ def build_interface():
             create_download_models_tab()
     return app
 
-
-# ----------------------------
-# Main Launch
-# ----------------------------
 if __name__ == '__main__':
     parser = ArgumentParser(
         description='Generate an AI cover of a song and output to song_output/id.',
